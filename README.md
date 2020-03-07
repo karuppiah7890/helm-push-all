@@ -1,5 +1,7 @@
 # helm-push-all
 
+![](https://github.com/karuppiah7890/helm-push-all/workflows/goreleaser/badge.svg)
+
 You can read the story behind this project [here](STORY.md)
 
 ## Installation
