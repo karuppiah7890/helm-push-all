@@ -1,0 +1,9 @@
+* write a cobra command for the plugin with help. check helm-schema-gen plugin code and do it.
+* setup github actions
+* setup goreleaser
+* See how to use the https://github.com/chartmuseum/helm-push plugin code / lib to push a single chart to chartmuseum
+* See how to check details about existing charts in chartmuseum
+* Check libraries that can help with go routines and job queue and worker model. It should be easy to
+test it. First write test for it, and then pass it. See how to write tests for it. Parallelizing needs
+to be done only to some extent - it should be configurable. For example, push 10 charts in parallel at
+once, by default. But the value can be changed
