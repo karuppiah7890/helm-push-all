@@ -1,7 +1,7 @@
 name: "push-all"
 version: "0.0.1"
-usage: "push all charts in a directory to chartmusem"
-description: "push all charts in a directory to chartmusem"
+usage: "push all charts in a directory to chartmuseum"
+description: "push all charts in a directory to chartmuseum"
 command: "$HELM_PLUGIN_DIR/bin/helm-push-all"
 hooks:
   install: "cd $HELM_PLUGIN_DIR; scripts/install_version.sh"

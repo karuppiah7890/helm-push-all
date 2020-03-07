@@ -12,8 +12,8 @@ var rootCmd = &cobra.Command{
 	Use:           "helm push-all <directory-with-charts> <chartmuseum-repo>",
 	SilenceUsage:  true,
 	SilenceErrors: true,
-	Short:         "Helm plugin to push all charts in a directory to chartmusem",
-	Long: `Helm plugin to push all charts in a directory to chartmusem
+	Short:         "Helm plugin to push all charts in a directory to chartmuseum",
+	Long: `Helm plugin to push all charts in a directory to chartmuseum
 
 Examples:
   $ helm push-all all-my-charts chartmuseum                 # push using chart repo name
