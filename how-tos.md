@@ -13,3 +13,8 @@ design and architecture. To do this, write as little code as possible. Unnecessa
 complexity and maintenance. No code means no maintenance and no complexity :P
 6. Users are the core of the software. The software should be easy to use. If user can't use it
 or understand how to use it, see behvaiour and try to change the software accordingly!
+7. Everything must be automated as much as possible. 
+8. And human errors can occur - that's okay. Put processes and automations in place to make sure
+errors don't occur, or we catch errors fast! And if we are catching errors - make sure errors don't impact
+us much or best to catch it before it impacts us - like failing release CI pipeline instead of releasing
+something wrong
