@@ -3,7 +3,9 @@
 set -e
 
 plugin_yaml=$1
-expected_version=$2
+# example: refs/tags/0.0.1
+refTag=$2
+expected_version=$(echo $refTag | cut -d "/" -f 3)
 
 if [ ! -e $plugin_yaml ];
 then
