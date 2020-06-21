@@ -25,3 +25,56 @@ Tasks:
 2. Write module code to read charts from a directory. Any directory with Chart.yaml is a chart.
 
 3. Write module code to validate chart from a directory. Only valid charts must be pushed. If linting fails, it must not be pushed I guess. Think on this!
+
+---
+
+Some things to note -
+* helm push plugin has quite some configurations that can be done using multiple
+flags. See below the flags it has based on version `0.8.1`
+
+```bash
+$ helm push -h
+Helm plugin to push chart package to ChartMuseum
+
+Examples:
+
+  $ helm push mychart-0.1.0.tgz chartmuseum       # push .tgz from "helm package"
+  $ helm push . chartmuseum                       # package and push chart directory
+  $ helm push . --version="7c4d121" chartmuseum   # override version in Chart.yaml
+  $ helm push . https://my.chart.repo.com         # push directly to chart repo URL
+
+Usage:
+  helm push [flags]
+
+Flags:
+      --access-token string             Send token in Authorization header [$HELM_REPO_ACCESS_TOKEN]
+      --auth-header string              Alternative header to use for token auth [$HELM_REPO_AUTH_HEADER]
+      --ca-file string                  Verify certificates of HTTPS-enabled servers using this CA bundle [$HELM_REPO_CA_FILE]
+      --cert-file string                Identify HTTPS client using this SSL certificate file [$HELM_REPO_CERT_FILE]
+      --check-helm-version              outputs either "2" or "3" indicating the current Helm major version
+      --context-path string             ChartMuseum context path [$HELM_REPO_CONTEXT_PATH]
+      --debug                           Enable verbose output
+  -d, --dependency-update               update dependencies from "requirements.yaml" to dir "charts/" before packaging
+  -f, --force                           Force upload even if chart version exists
+  -h, --help                            help for helm
+      --home string                     Location of your Helm config. Overrides $HELM_HOME (default "/Users/karuppiahn/.helm")
+      --host string                     Address of Tiller. Overrides $HELM_HOST
+      --insecure                        Connect to server with an insecure way by skipping certificate verification [$HELM_REPO_INSECURE]
+      --key-file string                 Identify HTTPS client using this SSL key file [$HELM_REPO_KEY_FILE]
+      --keyring string                  location of a public keyring (default "/Users/karuppiahn/.gnupg/pubring.gpg")
+      --kube-context string             Name of the kubeconfig context to use
+      --kubeconfig string               Absolute path of the kubeconfig file to be used
+  -p, --password string                 Override HTTP basic auth password [$HELM_REPO_PASSWORD]
+      --tiller-connection-timeout int   The duration (in seconds) Helm will wait to establish a connection to Tiller (default 300)
+      --tiller-namespace string         Namespace of Tiller (default "kube-system")
+  -u, --username string                 Override HTTP basic auth username [$HELM_REPO_USERNAME]
+  -v, --version string                  Override chart version pre-push
+```
+
+Some might not make sense, for example, tiller related stuff will not make sense
+for Helm v3. Also, Helm v2 will be gone soon. As in, the support for it - in
+terms of bug fixes and security fixes and the feature development for it has
+already been stopped. Only Helm v3 will get new features. So yeah. I guess it's
+better to mainly support v3 and not have any flags related to tiller and all.
+
+To start with, I'll not bring in these flags. At some point, I need to 😅
