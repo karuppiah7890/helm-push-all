@@ -146,3 +146,40 @@ chart it'll be able to load, or else it will not load.
 So, what I'm going to do is, if some file or directory is not a valid chart
 or not a chart at all, I'm going to silently ignore it and have warning
 messages for those files / directories.
+
+---
+
+Running tests in GitHub Actions
+
+I found this cool repo to help with this!
+
+https://github.com/mvdan/github-actions-golang
+
+It shows how GitHub actions can run a matrix of tests - different golang
+versions and different platforms. I'm thinking of running it just for Mac OS
+and go v1.14.x for now. I think I could support linux too! :) Let me just run
+the tests in linux too. Windows, may be not. Will try to support this later if
+needed. Or...okay, let me keep it, for tests. If there are any issues, based on
+that I'll think about it. 
+
+Changing this
+
+```yaml
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: [1.13.x, 1.14.x]
+        platform: [ubuntu-latest, macos-latest, windows-latest]
+```
+
+to this
+
+```yaml
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: [1.14.x]
+        platform: [ubuntu-latest, macos-latest, windows-latest]
+```
