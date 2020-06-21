@@ -183,3 +183,23 @@ jobs:
         go-version: [1.14.x]
         platform: [ubuntu-latest, macos-latest, windows-latest]
 ```
+
+I forgot to add caching for golang modules. The same repo mentions about
+caching using 
+
+```yaml
+- uses: actions/cache@v2
+  with:
+    path: ~/go/pkg/mod
+    key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+    restore-keys: |
+      ${{ runner.os }}-go-
+```
+
+I tried to understand the above here
+
+https://help.github.com/en/actions/configuring-and-managing-workflows/caching-dependencies-to-speed-up-workflows
+
+https://help.github.com/en/actions/configuring-and-managing-workflows/caching-dependencies-to-speed-up-workflows#using-the-cache-action
+
+
