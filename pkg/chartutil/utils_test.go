@@ -16,7 +16,7 @@ func TestReadCharts(t *testing.T) {
 		"helm3-packaged-chart",
 	}
 
-	charts, warnings, err := chartutil.ReadCharts("testdata/mixed-charts")
+	chartInfos, warnings, err := chartutil.ReadCharts("testdata/mixed-charts")
 	if assert.Len(t, warnings, 3) {
 		assert.Contains(t, warnings[0], "chart.metadata.name is required")
 		assert.Contains(t, warnings[1], "does not appear to be a gzipped archive")
@@ -25,20 +25,10 @@ func TestReadCharts(t *testing.T) {
 
 	assert.Nil(t, err)
 
-	actualChartNames := make([]string, 0, len(charts))
+	actualChartNames := make([]string, 0, len(chartInfos))
 
-	for _, chart := range charts {
-		v3Chart := chart.V3
-		if v3Chart != nil {
-			actualChartNames = append(actualChartNames, v3Chart.Name())
-			continue
-		}
-
-		v2Chart := chart.V2
-		if v2Chart != nil {
-			actualChartNames = append(actualChartNames, v2Chart.Metadata.Name)
-			continue
-		}
+	for _, chartInfo := range chartInfos {
+		actualChartNames = append(actualChartNames, chartInfo.Name)
 	}
 
 	assert.ElementsMatch(t, expectedChartNames, actualChartNames, "list of charts should match")
