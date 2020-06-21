@@ -28,7 +28,7 @@ func TestReadCharts(t *testing.T) {
 	actualChartNames := make([]string, 0, len(chartInfos))
 
 	for _, chartInfo := range chartInfos {
-		actualChartNames = append(actualChartNames, chartInfo.Name)
+		actualChartNames = append(actualChartNames, chartInfo.Name())
 	}
 
 	assert.ElementsMatch(t, expectedChartNames, actualChartNames, "list of charts should match")
