@@ -202,4 +202,70 @@ https://help.github.com/en/actions/configuring-and-managing-workflows/caching-de
 
 https://help.github.com/en/actions/configuring-and-managing-workflows/caching-dependencies-to-speed-up-workflows#using-the-cache-action
 
+---
 
+Now that I have read all the charts, I'm thinking about how to create an order
+for the charts, so that they can be pushed in the right order.
+
+Also, I have started writing code for Helm v2 too. Not sure about it now. I mean,
+many people still use v2. Hmm. I think the only data that matters for this tool
+is
+
+* Chart name
+* Chart version
+* Chart Metadata API version (v1/v2)
+* Chart requirements
+  - Chart name
+  - Chart repository URL
+
+One thing to note is, when people update a child chart and it's parent chart,
+in the parent chart, they will not be able to get the lock file for the new
+child chart version, they can only make the change in `Chart.yaml` or
+`requirements.yaml`, but can't get the new `Chart.lock` or `requirements.lock`.
+For this, the child chart has to be pushed to the chart repo, and then the
+parent chart can do `helm dependency update` to get the correct lock file for
+the new chart dependency. So, for this whole thing to happen
+* Child chart must be pushed first to the chart repo
+* Repo index in local must be updated to reflect in the index that the child
+chart has been pushed and is available
+* Helm dependency update can be run in the parent chart to get the new lock file
+* The parent chart can be packaged and pushed
+
+What does this mean? This would mean that, people don't need to maintain the
+requirements.lock file in their git repo. Instead, it would be taken care by
+this tool and overriden even if present, and overriden with correct value, and
+then pushed to chart repo. So, it's best not to store it in the git repo, as
+it's not going to be the correct value, given the correct value will be detected
+only when the CI/CD pipeline runs the tool or you need to run the tool locally,
+and see how to add and commit the lock file. But the tool is ideally meant to be
+run in the pipeline, for a git ops workflow.
+
+I need to check how the helm push works along with dependency update flag or
+I can manually run it, to make sure that even if the user misses, the tool makes
+sure that dependency update happens.
+
+---
+
+Expectation is, the user will most probably have all the charts in a directory.
+Each chart will be a directory.
+
+---
+
+For the order of charts
+* I first need all the dependencies of each chart, and I
+could get this when I read the charts from the directory
+* After this, I could go through the list of charts once and create a parent
+relationship for each chart and also find the charts with 0 dependencies
+* Push the charts with 0 dependencies and then notify their parents that they
+have been pushed. When all the child charts (dependencies) of a parent chart are
+pushed, the parent chart will be pushed. To do this, after every notification
+the parent chart receives from the child chart, it will check if all it's child
+charts are pushed, so that the parent chart can be pushed
+
+For pushing charts and that too for pushing them with concurrency and
+parallelism, I was thinking of a job queue and worker model.
+
+Initially spawn some workers, in golang, some go routines I guess. And then the
+workers will read from a job queue and do it's work. In golang, I can use
+channels, preferrably buffered channels, with buffer size as total number of
+charts in the directory. 
