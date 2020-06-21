@@ -84,3 +84,65 @@ already been stopped. Only Helm v3 will get new features. So yeah. I guess it's
 better to mainly support v3 and not have any flags related to tiller and all.
 
 To start with, I'll not bring in these flags. At some point, I need to 😅
+
+---
+
+I can see that there are lot of command level features in the helm push plugin
+code, other than the package code.
+
+I was thinking if I should use exec and execute and helm push command. Hmm.
+
+So, I was trying to think what kind of functionality this tool is trying to
+provide.
+
+The idea is to be a wrapper tool - to be built on top of helm push and provide
+the extra feature of bulk push. Keep it fast. And also support pushing charts
+which are interdependent.
+
+So, the code of this tool will contain logic for features like
+* Bulk push charts in a concurrent and parallel manner
+* Know the dependency among charts and accordingly push the charts in proper
+order. This order will be determined after drawing a dependency graph of all
+the charts
+
+What I thought was - may be, I can provide the above features and let users
+hook into the whole functionality of helm push, by letting them tell what is
+the command they want to run for each chart. A user interface like this -
+
+```bash
+$ helm push-all all-my-charts --command "helm push {.Chart} chartmuseum-repo" 
+```
+
+And the above is kind of the simplest feature. For the simplest feature, without
+all the options and complex features, I could also provide
+
+```bash
+$ helm push-all all-my-charts chartmuseum-repo
+```
+
+If they want to use all the crazy options and all, they could just use the
+previous and it will invoke the helm push command. Some things to note when it
+comes to invoking commands / executing commands, the environment variables that
+the command has access to, and the working directory it's present in. Ideally
+it should be the same as what's accessible to helm-push-all and where
+helm-push-all is running
+
+---
+
+Decisions
+1. Support only Helm v3 at the moment. Don't do extra work to make v2 work. If
+it comes for free, all cool. Or else not needed. But Helm v3 must be supported!
+
+---
+
+The first task I'm doing is - read all charts from a directory.
+
+Modules
+1. Write module code to read charts from a directory. Any directory with
+Chart.yaml is a chart but there's more to it. So it's better to use proper
+functions from Helm or Helm push to try to load the chart and if it's a valid
+chart it'll be able to load, or else it will not load. 
+
+So, what I'm going to do is, if some file or directory is not a valid chart
+or not a chart at all, I'm going to silently ignore it and have warning
+messages for those files / directories.
