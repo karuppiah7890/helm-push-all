@@ -6,6 +6,12 @@ which contains our helm charts, and the pipeline runs to push all the charts to
 and smooth and fast. This is my attempt to do just that - make it easier for me to push charts faster and to
 also fail fast if there are any issues in the pipeline! :)
 
+Also, a lot of the ideas started from here https://kubernetes.slack.com/archives/C0NH30761/p1575737530228200
+
+![1](images/story/1.png "1")
+
+![2](images/story/2.png "2")
+
 I'll keep updating this story with more details about the problem I'm trying to solve. I have written
 down the problems and ideas in multiple places. 🙈 😅
 
