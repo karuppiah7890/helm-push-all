@@ -1,6 +1,7 @@
 package chartutil
 
 import (
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 
@@ -48,7 +49,7 @@ func ReadCharts(dir string) (ChartInfos, Warnings, error) {
 		chartPath := filepath.Join(dir, fileInfo.Name())
 		chart, warning := helmpush_helm.GetChartByName(chartPath)
 		if warning != nil {
-			warnings = append(warnings, warning.Error())
+			warnings = append(warnings, fmt.Sprintf("%s: %s", chartPath, warning.Error()))
 			continue
 		}
 		requirements, err := getChartDependencies(chart)

@@ -18,9 +18,9 @@ func TestReadCharts(t *testing.T) {
 
 	chartInfos, warnings, err := chartutil.ReadCharts("testdata/mixed-charts")
 	if assert.Len(t, warnings, 3) {
-		assert.Contains(t, warnings[0], "chart.metadata.name is required")
-		assert.Contains(t, warnings[1], "does not appear to be a gzipped archive")
-		assert.Contains(t, warnings[2], "seems to be a YAML file, but expected a gzipped archive")
+		assert.Equal(t, "testdata/mixed-charts/invalid-chart: validation: chart.metadata.name is required", warnings[0])
+		assert.Equal(t, "testdata/mixed-charts/random-file: file 'testdata/mixed-charts/random-file' does not appear to be a gzipped archive; got 'application/octet-stream'", warnings[1])
+		assert.Equal(t, "testdata/mixed-charts/some-yaml.yaml: file 'testdata/mixed-charts/some-yaml.yaml' seems to be a YAML file, but expected a gzipped archive", warnings[2])
 	}
 
 	assert.Nil(t, err)
