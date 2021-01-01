@@ -269,3 +269,36 @@ Initially spawn some workers, in golang, some go routines I guess. And then the
 workers will read from a job queue and do it's work. In golang, I can use
 channels, preferrably buffered channels, with buffer size as total number of
 charts in the directory. 
+
+---
+
+Possible problems:
+1. Based on code, we think that all the chart names will be unique. This is
+considering that all the charts will be present as directories in one directory.
+In this case, by the OS's restriction, all the directories will have unique
+name, so all good. But, if there are any tar balls which have the same name
+as another chart present as a directory, if there are different tar balls, each
+with same name, but different chart versions, or may be even same chart version
+but tar ball file names are different because of OS's unique file / directory
+name restriction, then there could be problems
+2. What if the parent chart is referring to a version of child chart that does
+not exist in the directory itself. Currently the code is not going to worry
+about the version of child chart present in the parent chart. This is because
+the version can be represented as a range and more in the usual yaml, which
+is requirements,yaml or Chart.yaml , and the exact versions are present only
+in the lock file and as we already saw, we are going to recreate the lock file
+and so, that's something out of question, we aren't going to believe that for
+latest information. So, either I need to check if the child chart referred to
+in the same directory satisfies the chart version mentioned by the parent chart,
+or else, error has to be thrown for parent chart to use the correct child chart
+version.
+
+---
+
+https://duckduckgo.com/?t=ffab&q=task+with+dependencies+scheduling&ia=web
+
+https://stackoverflow.com/questions/59317200/task-scheduling-problem-with-task-dependencies
+
+https://en.wikipedia.org/wiki/Job_shop_scheduling
+
+http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.143.5570
