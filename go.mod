@@ -1,6 +1,6 @@
 module github.com/karuppiah7890/helm-push-all
 
-go 1.14
+go 1.15
 
 require (
 	github.com/chartmuseum/helm-push v0.8.1
