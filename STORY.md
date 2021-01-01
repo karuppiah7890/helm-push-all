@@ -26,6 +26,7 @@ These are some of the things I wrote in my notes:
 ---
 
 Tasks:
+
 1. Write module code to push one chart. Do TDD.
 
 2. Write module code to read charts from a directory. Any directory with Chart.yaml is a chart.
@@ -35,8 +36,9 @@ Tasks:
 ---
 
 Some things to note -
-* helm push plugin has quite some configurations that can be done using multiple
-flags. See below the flags it has based on version `0.8.1`
+
+- helm push plugin has quite some configurations that can be done using multiple
+  flags. See below the flags it has based on version `0.8.1`
 
 ```bash
 $ helm push -h
@@ -100,17 +102,18 @@ the extra feature of bulk push. Keep it fast. And also support pushing charts
 which are interdependent.
 
 So, the code of this tool will contain logic for features like
-* Bulk push charts in a concurrent and parallel manner
-* Know the dependency among charts and accordingly push the charts in proper
-order. This order will be determined after drawing a dependency graph of all
-the charts
+
+- Bulk push charts in a concurrent and parallel manner
+- Know the dependency among charts and accordingly push the charts in proper
+  order. This order will be determined after drawing a dependency graph of all
+  the charts
 
 What I thought was - may be, I can provide the above features and let users
 hook into the whole functionality of helm push, by letting them tell what is
 the command they want to run for each chart. A user interface like this -
 
 ```bash
-$ helm push-all all-my-charts --command "helm push {.Chart} chartmuseum-repo" 
+$ helm push-all all-my-charts --command "helm push {.Chart} chartmuseum-repo"
 ```
 
 And the above is kind of the simplest feature. For the simplest feature, without
@@ -130,18 +133,20 @@ helm-push-all is running
 ---
 
 Decisions
+
 1. Support only Helm v3 at the moment. Don't do extra work to make v2 work. If
-it comes for free, all cool. Or else not needed. But Helm v3 must be supported!
+   it comes for free, all cool. Or else not needed. But Helm v3 must be supported!
 
 ---
 
 The first task I'm doing is - read all charts from a directory.
 
 Modules
+
 1. Write module code to read charts from a directory. Any directory with
-Chart.yaml is a chart but there's more to it. So it's better to use proper
-functions from Helm or Helm push to try to load the chart and if it's a valid
-chart it'll be able to load, or else it will not load. 
+   Chart.yaml is a chart but there's more to it. So it's better to use proper
+   functions from Helm or Helm push to try to load the chart and if it's a valid
+   chart it'll be able to load, or else it will not load.
 
 So, what I'm going to do is, if some file or directory is not a valid chart
 or not a chart at all, I'm going to silently ignore it and have warning
@@ -160,7 +165,7 @@ versions and different platforms. I'm thinking of running it just for Mac OS
 and go v1.14.x for now. I think I could support linux too! :) Let me just run
 the tests in linux too. Windows, may be not. Will try to support this later if
 needed. Or...okay, let me keep it, for tests. If there are any issues, based on
-that I'll think about it. 
+that I'll think about it.
 
 Changing this
 
@@ -185,7 +190,7 @@ jobs:
 ```
 
 I forgot to add caching for golang modules. The same repo mentions about
-caching using 
+caching using
 
 ```yaml
 - uses: actions/cache@v2
@@ -211,10 +216,10 @@ Also, I have started writing code for Helm v2 too. Not sure about it now. I mean
 many people still use v2. Hmm. I think the only data that matters for this tool
 is
 
-* Chart name
-* Chart version
-* Chart Metadata API version (v1/v2)
-* Chart requirements
+- Chart name
+- Chart version
+- Chart Metadata API version (v1/v2)
+- Chart requirements
   - Chart name
   - Chart repository URL
 
@@ -225,11 +230,12 @@ child chart version, they can only make the change in `Chart.yaml` or
 For this, the child chart has to be pushed to the chart repo, and then the
 parent chart can do `helm dependency update` to get the correct lock file for
 the new chart dependency. So, for this whole thing to happen
-* Child chart must be pushed first to the chart repo
-* Repo index in local must be updated to reflect in the index that the child
-chart has been pushed and is available
-* Helm dependency update can be run in the parent chart to get the new lock file
-* The parent chart can be packaged and pushed
+
+- Child chart must be pushed first to the chart repo
+- Repo index in local must be updated to reflect in the index that the child
+  chart has been pushed and is available
+- Helm dependency update can be run in the parent chart to get the new lock file
+- The parent chart can be packaged and pushed
 
 What does this mean? This would mean that, people don't need to maintain the
 requirements.lock file in their git repo. Instead, it would be taken care by
@@ -252,15 +258,16 @@ Each chart will be a directory.
 ---
 
 For the order of charts
-* I first need all the dependencies of each chart, and I
-could get this when I read the charts from the directory
-* After this, I could go through the list of charts once and create a parent
-relationship for each chart and also find the charts with 0 dependencies
-* Push the charts with 0 dependencies and then notify their parents that they
-have been pushed. When all the child charts (dependencies) of a parent chart are
-pushed, the parent chart will be pushed. To do this, after every notification
-the parent chart receives from the child chart, it will check if all it's child
-charts are pushed, so that the parent chart can be pushed
+
+- I first need all the dependencies of each chart, and I
+  could get this when I read the charts from the directory
+- After this, I could go through the list of charts once and create a parent
+  relationship for each chart and also find the charts with 0 dependencies
+- Push the charts with 0 dependencies and then notify their parents that they
+  have been pushed. When all the child charts (dependencies) of a parent chart are
+  pushed, the parent chart will be pushed. To do this, after every notification
+  the parent chart receives from the child chart, it will check if all it's child
+  charts are pushed, so that the parent chart can be pushed
 
 For pushing charts and that too for pushing them with concurrency and
 parallelism, I was thinking of a job queue and worker model.
@@ -268,30 +275,31 @@ parallelism, I was thinking of a job queue and worker model.
 Initially spawn some workers, in golang, some go routines I guess. And then the
 workers will read from a job queue and do it's work. In golang, I can use
 channels, preferrably buffered channels, with buffer size as total number of
-charts in the directory. 
+charts in the directory.
 
 ---
 
 Possible problems:
+
 1. Based on code, we think that all the chart names will be unique. This is
-considering that all the charts will be present as directories in one directory.
-In this case, by the OS's restriction, all the directories will have unique
-name, so all good. But, if there are any tar balls which have the same name
-as another chart present as a directory, if there are different tar balls, each
-with same name, but different chart versions, or may be even same chart version
-but tar ball file names are different because of OS's unique file / directory
-name restriction, then there could be problems
+   considering that all the charts will be present as directories in one directory.
+   In this case, by the OS's restriction, all the directories will have unique
+   name, so all good. But, if there are any tar balls which have the same name
+   as another chart present as a directory, if there are different tar balls, each
+   with same name, but different chart versions, or may be even same chart version
+   but tar ball file names are different because of OS's unique file / directory
+   name restriction, then there could be problems
 2. What if the parent chart is referring to a version of child chart that does
-not exist in the directory itself. Currently the code is not going to worry
-about the version of child chart present in the parent chart. This is because
-the version can be represented as a range and more in the usual yaml, which
-is requirements,yaml or Chart.yaml , and the exact versions are present only
-in the lock file and as we already saw, we are going to recreate the lock file
-and so, that's something out of question, we aren't going to believe that for
-latest information. So, either I need to check if the child chart referred to
-in the same directory satisfies the chart version mentioned by the parent chart,
-or else, error has to be thrown for parent chart to use the correct child chart
-version.
+   not exist in the directory itself. Currently the code is not going to worry
+   about the version of child chart present in the parent chart. This is because
+   the version can be represented as a range and more in the usual yaml, which
+   is requirements,yaml or Chart.yaml , and the exact versions are present only
+   in the lock file and as we already saw, we are going to recreate the lock file
+   and so, that's something out of question, we aren't going to believe that for
+   latest information. So, either I need to check if the child chart referred to
+   in the same directory satisfies the chart version mentioned by the parent chart,
+   or else, error has to be thrown for parent chart to use the correct child chart
+   version.
 
 ---
 
@@ -302,3 +310,18 @@ https://stackoverflow.com/questions/59317200/task-scheduling-problem-with-task-d
 https://en.wikipedia.org/wiki/Job_shop_scheduling
 
 http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.143.5570
+
+---
+
+At a technical level, the problems to solve are
+
+- Parallel execution of tasks. Task being - building, packaging and pushing
+  charts. Tasks have dependencies as charts have dependencies. The parallelism
+  can be controlled.
+
+- Dependency Graph walking problem. The charts have dependencies. Looks like we
+  might need to walk the graph to understand about it. What we need? The
+  dependencies among the different charts - a full view of the dependency
+  graph - with some data like, what are the leaf nodes. This already directly
+  ties to the parallel execution as it's completely based on the dependency
+  graph - which translates to the task dependency
