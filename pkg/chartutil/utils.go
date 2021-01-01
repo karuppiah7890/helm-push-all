@@ -26,6 +26,8 @@ type ChartInfo struct {
 	chartRequirements ChartDependencies
 	path              string
 	name              string
+	children          ChartInfos
+	parents           ChartInfos
 }
 
 // Name returns the chart name
@@ -33,8 +35,18 @@ func (c ChartInfo) Name() string {
 	return c.name
 }
 
+// Children returns the chart's children / dependencies
+func (c ChartInfo) Children() ChartInfos {
+	return c.children
+}
+
+// Parents returns the chart's parents / dependents
+func (c ChartInfo) Parents() ChartInfos {
+	return c.parents
+}
+
 // ChartInfos is an array of chart
-type ChartInfos []ChartInfo
+type ChartInfos []*ChartInfo
 
 // ReadCharts from a directory
 func ReadCharts(dir string) (ChartInfos, Warnings, error) {
@@ -56,7 +68,7 @@ func ReadCharts(dir string) (ChartInfos, Warnings, error) {
 		if err != nil {
 			return nil, nil, err
 		}
-		charts = append(charts, ChartInfo{
+		charts = append(charts, &ChartInfo{
 			chart:             chart,
 			chartRequirements: requirements,
 			path:              chartPath,
