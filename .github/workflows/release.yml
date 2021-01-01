@@ -11,16 +11,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Unshallow
         run: git fetch --prune --unshallow
+
       - name: Check plugin version
         uses: mikefarah/yq@3.2.1
         with:
           cmd: ./scripts/check_plugin_version.sh plugin.yaml ${{ github.ref }}
+
       - name: Set up Go
         uses: actions/setup-go@v1
         with:
           go-version: 1.15
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v1
         with:

@@ -7,22 +7,25 @@ jobs:
         platform: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
-    - name: Install Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.15
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Cache Golang modules
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/go/pkg/mod              # Module download cache
-          ~/.cache/go-build         # Build cache (Linux)
-          ~/Library/Caches/go-build # Build cache (Mac)
-          '%LocalAppData%\go-build' # Build cache (Windows)
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
-    - name: Test
-      run: go test -v ./...
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.15
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Cache Golang modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/go/pkg/mod              # Module download cache
+            ~/.cache/go-build         # Build cache (Linux)
+            ~/Library/Caches/go-build # Build cache (Mac)
+            '%LocalAppData%\go-build' # Build cache (Windows)
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Test
+        run: go test -v ./...
