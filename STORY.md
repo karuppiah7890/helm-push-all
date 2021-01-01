@@ -338,7 +338,7 @@ https://en.m.wikipedia.org/wiki/Graph_traversal
 
 What do I need? BFS? DFS? Hmm
 
-Directed Acyclic Graph? Or just Directed Graph? Can Charts have cyclic dependencies? Possible? Think about it. Maybe it's possible, with different versions. 
+Directed Acyclic Graph? Or just Directed Graph? Can Charts have cyclic dependencies? Possible? Think about it. Maybe it's possible, with different versions.
 
 Chart C V2 depends on Chart A v2. Chart A v2 depends on Chart C v1. Chart C v1 depends on Chart A v1
 
@@ -362,7 +362,7 @@ But topological sort will work easily with only one worker. We want parallel mul
 
 https://dzone.com/articles/parallelizing-tasks-with-dependencies-design-your
 
- https://medium.com/@TRikace/parallelizing-tasks-with-dependencies-design-your-code-to-optimize-performance-d0948549f1eb
+https://medium.com/@TRikace/parallelizing-tasks-with-dependencies-design-your-code-to-optimize-performance-d0948549f1eb
 
 https://taskfile.dev
 
@@ -394,4 +394,22 @@ With top down, for every chart, it has to wait for its dependencies to be over. 
 
 Leaf nodes or charts are the ones with zero out degree :) out count. Outer directed edge count. There must be algorithms to find that too :)
 
-Some of the charts may not have any dependencies on any of the internal charts or just a part of the internal charts (of the git repo). Consider that case too. If all are dependencies are external chart repo charts, then they are also leaf nodes :) We are mainly looking at internal chart repo dependencies ONLY :)
+Some of the chart may not have any dependencies on any of the internal charts or just a part of the internal charts (of the git repo). Consider that case too. If all are dependencies are external chart repo charts, then they are also leaf nodes :) We are mainly looking at internal chart repo dependencies ONLY :)
+
+---
+
+I was just now reading all the code I had written. I'm not sure if I wrote them
+or someone else wrote them. It all looks clean and good. But yeah, I don't know
+why I have done somethings in some way. Lol :P But it looks sensible enough as
+I can't think of any possible alternatives :P :P
+
+---
+
+Looks like I have already written a module to read the charts. Nice! I was just
+reading a bit of the story from above.
+
+One thing I noticed in the code was that the warnings are just strings. I saw it
+in the test. I think we might have to make them a bit better. As the warnings
+have no context - what file / directory got that warning.
+
+I'm going to add that now itself cuz a simple solution is just too easy.
