@@ -1,6 +1,8 @@
 package chartutil_test
 
 import (
+	"fmt"
+	"path/filepath"
 	"testing"
 
 	"github.com/karuppiah7890/helm-push-all/pkg/chartutil"
@@ -16,11 +18,19 @@ func TestReadCharts(t *testing.T) {
 		"helm3-packaged-chart",
 	}
 
+	invalidChartPath1 := filepath.Join("testdata", "mixed-charts", "invalid-chart")
+	invalidChartPath2 := filepath.Join("testdata", "mixed-charts", "random-file")
+	invalidChartPath3 := filepath.Join("testdata", "mixed-charts", "some-yaml.yaml")
+
+	expectedWarnings := chartutil.Warnings{
+		fmt.Sprintf("%s: validation: chart.metadata.name is required", invalidChartPath1),
+		fmt.Sprintf("%s: file '%s' does not appear to be a gzipped archive; got 'application/octet-stream'", invalidChartPath2, invalidChartPath2),
+		fmt.Sprintf("%s: file '%s' seems to be a YAML file, but expected a gzipped archive", invalidChartPath3, invalidChartPath3),
+	}
+
 	chartInfos, warnings, err := chartutil.ReadCharts("testdata/mixed-charts")
 	if assert.Len(t, warnings, 3) {
-		assert.Equal(t, "testdata/mixed-charts/invalid-chart: validation: chart.metadata.name is required", warnings[0])
-		assert.Equal(t, "testdata/mixed-charts/random-file: file 'testdata/mixed-charts/random-file' does not appear to be a gzipped archive; got 'application/octet-stream'", warnings[1])
-		assert.Equal(t, "testdata/mixed-charts/some-yaml.yaml: file 'testdata/mixed-charts/some-yaml.yaml' seems to be a YAML file, but expected a gzipped archive", warnings[2])
+		assert.Equal(t, expectedWarnings, warnings)
 	}
 
 	assert.Nil(t, err)
