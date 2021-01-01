@@ -239,7 +239,7 @@ the new chart dependency. So, for this whole thing to happen
 
 What does this mean? This would mean that, people don't need to maintain the
 requirements.lock file in their git repo. Instead, it would be taken care by
-this tool and overriden even if present, and overriden with correct value, and
+this tool and overridden even if present, and overriden with correct value, and
 then pushed to chart repo. So, it's best not to store it in the git repo, as
 it's not going to be the correct value, given the correct value will be detected
 only when the CI/CD pipeline runs the tool or you need to run the tool locally,
