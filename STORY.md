@@ -274,7 +274,7 @@ parallelism, I was thinking of a job queue and worker model.
 
 Initially spawn some workers, in golang, some go routines I guess. And then the
 workers will read from a job queue and do it's work. In golang, I can use
-channels, preferrably buffered channels, with buffer size as total number of
+channels, preferably buffered channels, with buffer size as total number of
 charts in the directory.
 
 ---
@@ -325,3 +325,73 @@ At a technical level, the problems to solve are
   graph - with some data like, what are the leaf nodes. This already directly
   ties to the parallel execution as it's completely based on the dependency
   graph - which translates to the task dependency
+
+---
+
+Graph traversal algorithms for Helm Chart dependency graph traversal
+
+https://ieeexplore.ieee.org/document/6267875
+
+https://en.m.wikipedia.org/wiki/Graph_traversal#/media/File%3AGraph-scan.png
+
+https://en.m.wikipedia.org/wiki/Graph_traversal
+
+What do I need? BFS? DFS? Hmm
+
+Directed Acyclic Graph? Or just Directed Graph? Can Charts have cyclic dependencies? Possible? Think about it. Maybe it's possible, with different versions. 
+
+Chart C V2 depends on Chart A v2. Chart A v2 depends on Chart C v1. Chart C v1 depends on Chart A v1
+
+Similar cyclic dependency can happen. Not exactly cyclic. Not cyclic if you consider a node to be a combination of both Chart and Chart Version, which is the ideal thing :)
+
+Always check what is the version of the chart each chart is dependent on. If you don't check that, then in the above case what we end up doing is
+
+Create a cyclic graph with C depending on A which in turn depends on C and again depends on A. Totally cyclic. In this case, we then won't be sure of what chart to push first. It's possible that only Chart C v2 needs to be pushed and everything else is already pushed. Or, another example is, Chart A v2 needs to be pushed first and then Chart C V2. It really depends on how the git push and git commit was done and at what time the chart push all operation is being done :)
+
+Topological Sort! Perfect!!
+
+https://softwareengineering.stackexchange.com/a/316406/363229
+
+https://en.m.wikipedia.org/wiki/Topological_sorting
+
+https://www.geeksforgeeks.org/find-the-ordering-of-tasks-from-given-dependencies/
+
+https://patterns.eecs.berkeley.edu/?page_id=609#Variations
+
+But topological sort will work easily with only one worker. We want parallel multiple workers. So, we need to know that task dependencies are finished and only then we can execute the others
+
+https://dzone.com/articles/parallelizing-tasks-with-dependencies-design-your
+
+ https://medium.com/@TRikace/parallelizing-tasks-with-dependencies-design-your-code-to-optimize-performance-d0948549f1eb
+
+https://taskfile.dev
+
+https://taskfile.dev/#/usage?id=task-dependencies
+
+https://github.com/go-task/task
+
+https://awesomeopensource.com/projects/task-runner
+
+Simple solution for now
+
+Golang channels will have tasks
+
+Who will put tasks? Initially the usual flow where leaf node charts are queued.
+
+Later, a goroutine will check the result channel that workers report to. This goroutine will create more tasks in the channel if a task can be successfully run - it's dependencies have successfully run
+
+Failures? Gotta see
+
+When to stop? When all charts are pushed. We know chart count. So all good
+
+Top down approach vs bottom up approach. Best approach is all based on time - execution time, almost no waiting or idle time. Ensure there's no idle or waiting time
+
+Also, the task creation goroutine currently would have to linearly check what tasks can be run next, if any, every time a result comes back from the workers
+
+Gotta check about async programming in golang
+
+With top down, for every chart, it has to wait for its dependencies to be over. Is that good? Is there some proper async way for that? Also when doing it in parallel, multiple duplicate tasks shouldn't run. Hmm. Task completion must be known here too! :)
+
+Leaf nodes or charts are the ones with zero out degree :) out count. Outer directed edge count. There must be algorithms to find that too :)
+
+Some of the charts may not have any dependencies on any of the internal charts or just a part of the internal charts (of the git repo). Consider that case too. If all are dependencies are external chart repo charts, then they are also leaf nodes :) We are mainly looking at internal chart repo dependencies ONLY :)
